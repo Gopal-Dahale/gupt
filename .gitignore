@@ -6,6 +6,15 @@ __pycache__/
 # C extensions
 *.so
 
+# Datasets
+datasets
+
+# VSCODE settings
+.vscode
+
+# Virtual env
+gupt_env
+
 # Distribution / packaging
 .Python
 build/
