@@ -1,0 +1,9 @@
+{
+  "python.linting.pylintEnabled": true,
+  "python.linting.enabled": true,
+  "python.linting.lintOnSave": true,
+  "python.pythonPath": "gupt_env\\Scripts\\python.exe",
+  "python.linting.pylintArgs": [
+    "--generated-members=numpy.* ,torch.*"
+   ]
+}

@@ -9,9 +9,6 @@ __pycache__/
 # Datasets
 datasets
 
-# VSCODE settings
-.vscode
-
 # Virtual env
 gupt_env
 
