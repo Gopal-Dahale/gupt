@@ -17,6 +17,13 @@ class BaseDataModule(pl.LightningDataModule):
         self.val_data= None
         self.test_data = None
 
+    def config(self):
+        return {
+            'input_dims':self.dims,
+            'output_dims':self.output_dims,
+            'mapping':self.mapping
+        }
+
     def train_dataloader(self):
         return DataLoader(self.train_data, batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
     

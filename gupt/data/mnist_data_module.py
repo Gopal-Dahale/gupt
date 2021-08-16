@@ -14,9 +14,6 @@ class MNISTDataModule(BaseDataModule):
         self.dims = (1,28,28)
         self.output_dims = (1,)
         self.mapping = list(range(10))
-        self.mnist_train = None
-        self.mnist_val= None
-        self.mnist_test = None
 
     def prepare_data(self):
         MNIST(self.data_dir,train=True, download=True)
@@ -31,10 +28,10 @@ class MNISTDataModule(BaseDataModule):
 
         # Assign Train/val split(s) for use in Dataloaders
         mnist_full = MNIST(self.data_dir, train=True, download=True, transform=self.transform)
-        self.mnist_train, self.mnist_val = random_split(mnist_full, [55000, 5000])
+        self.train_data, self.val_data = random_split(mnist_full, [55000, 5000])
 
         # Assign Test split(s) for use in Dataloaders
-        self.mnist_test = MNIST(self.data_dir, train=False, download=True,transform=self.transform)
+        self.test_data = MNIST(self.data_dir, train=False, download=True,transform=self.transform)
 
 if __name__ == "__main__":
     load_data(MNISTDataModule)

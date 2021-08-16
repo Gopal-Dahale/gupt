@@ -1,0 +1,1 @@
+from .ffnn import FeedForwardNN
