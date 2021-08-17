@@ -1,7 +1,8 @@
 import torch
 
+
 class BaseDataset(torch.utils.data.Dataset):
-    def __init__(self,data,targets,transform, target_transform):
+    def __init__(self, data, targets, transform, target_transform):
         super().__init__()
         if len(data) != len(targets):
             print("Length of Targets must match with length of Data")
@@ -25,7 +26,7 @@ class BaseDataset(torch.utils.data.Dataset):
         if self.target_transform is not None:
             label = self.target_transform(label)
         return data_point, label
-    
+
     def __len__(self):
         """expected to return the size of the dataset
         """

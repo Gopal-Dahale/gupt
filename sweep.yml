@@ -1,0 +1,21 @@
+command:
+  - ${env}
+  - ${interpreter}
+  - ${program}
+  - "--wandb"
+  - ${args}
+program: train/training.py
+method: random
+metric:
+  goal: minimize
+  name: val_loss
+early_terminate:
+  type: hyperband
+  min_iter: 50
+parameters:
+  lr:
+    values: [0.01, 0.001, 0.0003]
+  num_workers:
+    value: 20
+  precision:
+    value: 16
