@@ -19,6 +19,7 @@ jobs:
             - ~/.local
       - run: 
         name: Format with YAPF 
+        when: always
         command: |
           pip install yapf
           yapf -i -r . --style pep8
