@@ -1,16 +1,24 @@
+""" Base Data Module Class"""
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 
 
 class BaseDataModule(pl.LightningDataModule):
+    """Base Data Module Class. All other data classes will inherit from this class
+
+    Args:
+        pl (Module): Lightning Data Module
+    """
+
     def __init__(self, args):
         super().__init__()
+
         self.args = {}
         if args is not None:
             self.args = vars(args)
+
         self.batch_size = 128
         self.num_workers = 4
-
         self.dims = None
         self.output_dims = None
         self.mapping = None
@@ -19,6 +27,11 @@ class BaseDataModule(pl.LightningDataModule):
         self.test_data = None
 
     def config(self):
+        """Function to return configuration of dataset
+
+        Returns:
+            dict: Input and Output dimensions of dataset and output mapping
+        """
         return {
             'input_dims': self.dims,
             'output_dims': self.output_dims,
@@ -45,6 +58,11 @@ class BaseDataModule(pl.LightningDataModule):
 
 
 def load_data(data_module):
+    """Function to load data from given data module
+
+    Args:
+        data_module (class): Data module class (eg. MNIST)
+    """
     dataset = data_module(None)
     dataset.prepare_data()
     dataset.setup()

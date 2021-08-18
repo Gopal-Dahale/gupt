@@ -1,27 +1,35 @@
+""" Training Model"""
 import numpy as np
 import pytorch_lightning as pl
-from pytorch_lightning import loggers as pl_loggers
 from gupt.data.mnist_data_module import MNISTDataModule
 from gupt.models.ffnn import FeedForwardNN
 from gupt import lightning_models
+# from pytorch_lightning import loggers as pl_loggers
 
 
 def main():
-    data = MNISTDataModule(None)
+    """Main function to train model
+    """
 
-    model = FeedForwardNN(input_size=np.prod(data.config()['input_dims']),
-                          hidden_sizes=[1024, 256, 64],
-                          output_size=len(data.config()['mapping']))
+    data = MNISTDataModule(None)
+    data_config = data.config()
+
+    model = FeedForwardNN(input_size=np.prod(data_config['input_dims']),
+                          hidden_sizes=[1024, 1024],
+                          output_size=len(data_config['mapping']))
+
     lit_model = lightning_models.BaseLitModel(model=model, args=None)
 
     # Setup wandb logger
-    logger = pl_loggers.WandbLogger()
-    logger.watch(model)
+    # logger = pl_loggers.WandbLogger()
+    # logger.watch(model)
 
-    trainer = pl.Trainer(max_epochs=5,
-                         weights_save_path='train/logs',
-                         weights_summary='full',
-                         logger=logger)
+    trainer = pl.Trainer(
+        max_epochs=2,
+        weights_save_path='train/logs',
+        weights_summary='full',
+        #  logger=logger
+    )
 
     trainer.tune(model=lit_model, datamodule=data)
     trainer.fit(model=lit_model, datamodule=data)

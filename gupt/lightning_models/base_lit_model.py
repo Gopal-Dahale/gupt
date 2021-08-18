@@ -1,22 +1,42 @@
-import pytorch_lightning as pl
+""" Base Lightning Model"""
 import torch
-import torchmetrics
 import torch.nn.functional as F
+import pytorch_lightning as pl
+import torchmetrics
 
 
 class Accuracy(torchmetrics.Accuracy):
+    """Measuring Accuracy
+
+    Args:
+        torchmetrics (Module): Accuracy metric from torchmetrics
+    """
+
     def update(self, preds, target):
+        """Applies softmax function if the preds are not between 0 and 1
+
+        Args:
+            preds (tensor): Model Predictions
+            target (tensor): Ground Truth
+        """
         if preds.min() < 0 or preds.max() > 1:
-            preds = torch.nn.functional.softmax(preds, dim=-1)  # Apply softmax
+            preds = torch.nn.functional.softmax(preds, dim=-1)
         super().update(preds=preds, target=target)
 
 
 class BaseLitModel(pl.LightningModule):
+    """Base Lightning Model. All models inherits this class.
+
+    Args:
+        pl (module): Lightning Module
+    """
+
     def __init__(self, model, args):
         super().__init__()
         self.args = {}
         if args is not None:
             self.args = vars(args)
+
         self.model = model
         self.lr = 1e-3
         self.loss_func = F.cross_entropy
@@ -35,7 +55,7 @@ class BaseLitModel(pl.LightningModule):
                                          momentum=0.9)
         return self.optimizer
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch, batch_idx):  # pylint: disable=unused-argument
         x, y = batch
         y_hat = self.model(x)
         loss = self.loss_func(y_hat, y)
@@ -44,7 +64,7 @@ class BaseLitModel(pl.LightningModule):
         self.log("train_acc", self.train_acc, on_step=False, on_epoch=True)
         return loss
 
-    def validation_step(self, batch, batch_idx):
+    def validation_step(self, batch, batch_idx):  # pylint: disable=unused-argument
         x, y = batch
         y_hat = self.model(x)
         loss = self.loss_func(y_hat, y)
@@ -56,7 +76,7 @@ class BaseLitModel(pl.LightningModule):
                  on_epoch=True,
                  prog_bar=True)
 
-    def test_step(self, batch, batch_idx):
+    def test_step(self, batch, batch_idx):  # pylint: disable=unused-argument
         x, y = batch
         y_hat = self.model(x)
         self.test_acc(y_hat, y)

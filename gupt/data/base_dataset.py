@@ -1,7 +1,14 @@
+""" Torch Base Dataset Class"""
 import torch
 
 
 class BaseDataset(torch.utils.data.Dataset):
+    """Base Dataset Class. All dataset will have this class as type
+
+    Args:
+        torch (Module): torch Dataset Module
+    """
+
     def __init__(self, data, targets, transform, target_transform):
         super().__init__()
         if len(data) != len(targets):

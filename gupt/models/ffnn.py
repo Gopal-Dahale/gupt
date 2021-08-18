@@ -1,9 +1,16 @@
-import torch.nn as nn
+""" Feed Forward Neural Network Model"""
 import torch
+from torch import nn
 import torch.nn.functional as F
 
 
 class FeedForwardNN(nn.Module):
+    """Feed Forward Neural Network class for recognizing digits from 0 to 9
+
+    Args:
+        nn (Module): torch nn module
+    """
+
     def __init__(self, input_size, hidden_sizes, output_size):
         super().__init__()
         self.layer_sizes = [input_size] + hidden_sizes + [output_size]
@@ -14,6 +21,14 @@ class FeedForwardNN(nn.Module):
                 nn.Linear(self.layer_sizes[i], self.layer_sizes[i + 1]))
 
     def forward(self, x):
+        """Forward Propagation
+
+        Args:
+            x (tensor): Input
+
+        Returns:
+            out (tensor): Output
+        """
         out = torch.flatten(x, 1)
 
         # Apply layers & activation functions
