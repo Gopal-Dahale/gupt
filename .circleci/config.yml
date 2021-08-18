@@ -23,13 +23,12 @@ jobs:
           command: |
             pip install yapf
             yapf -i -r . --style pep8
-
-      # - run: 
-      #   name: Lint with flake8
-      #   command: |
-      #     pip install flake8
-      #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude resources
-      #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude resources
+      - run: 
+          name: Lint with flake8
+          command: |
+            pip install flake8
+            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude resources
+            flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude resources
 
       # - run: 
       #   name: Run Pylint
