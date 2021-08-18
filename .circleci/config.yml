@@ -8,22 +8,20 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - cache-{{ checksum "requirements.txt" }
+          - cache-{{ checksum "requirements.txt" }}
       - run:
           name: Install Dependencies
           command: |
             pip install --quiet -r requirements.txt
-
       - save_cache:
           key: cache-{{ checksum "requirements.txt" }}
           paths:
             - ~/.local
-
-      # - run: 
-      #   name: Format with YAPF 
-      #   command: |
-      #     pip install yapf
-      #     yapf -i -r . --style pep8
+      - run: 
+        name: Format with YAPF 
+        command: |
+          pip install yapf
+          yapf -i -r . --style pep8
 
       # - run: 
       #   name: Lint with flake8
