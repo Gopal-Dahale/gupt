@@ -29,18 +29,16 @@ jobs:
             pip install flake8
             flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude resources
             flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude resources
-
-      # - run: 
-      #   name: Run Pylint
-      #   command: |
-      #     pip install pylint 
-      #     pylint **/*.py --output-format=text --rcfile=.pylintrc
-
-      # - run: 
-      #   name: Run Bandit
-      #   command: |
-      #     pip install bandit
-      #     bandit -ll -r gupt train
-      # - store_artifacts:
-      #     path: test-reports
-      #     destination: test-reports
+      - run: 
+          name: Run Pylint
+          command: |
+            pip install pylint 
+            pylint **/*.py --output-format=text --rcfile=.pylintrc
+      - run: 
+          name: Run Bandit
+          command: |
+            pip install bandit
+            bandit -ll -r gupt train
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
