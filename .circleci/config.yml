@@ -1,10 +1,7 @@
 version: 2.1
 
-orbs:
-  python: circleci/python@1.2
-
 jobs:
-  build-and-test: 
+  build: 
     docker:
       - image: cimg/python:3.8
     steps:
@@ -12,9 +9,11 @@ jobs:
       - restore_cache:
           keys:
           - cache-{{ checksum "requirements.txt" }
-      - name: Install Dependencies
-        run: |
-          pip install --quiet -r requirements.txt
+      - run:
+          name: Install Dependencies
+          command: |
+            pip install --quiet -r requirements.txt
+
       - save_cache:
           key: cache-{{ checksum "requirements.txt" }}
           paths:
@@ -44,3 +43,6 @@ jobs:
       #   command: |
       #     pip install bandit
       #     bandit -ll -r gupt train
+      # - store_artifacts:
+      #     path: test-reports
+      #     destination: test-reports
