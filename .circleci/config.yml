@@ -1,0 +1,44 @@
+version: 2.1
+
+jobs:
+  build: 
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - cache-{{ checksum "requirements.txt" }}
+      - run:
+          name: Install Dependencies
+          command: |
+            pip install --quiet -r requirements.txt
+      - save_cache:
+          key: cache-{{ checksum "requirements.txt" }}
+          paths:
+            - ~/.local
+      - run: 
+          name: Format with YAPF 
+          when: always
+          command: |
+            pip install yapf
+            yapf -i -r . --style pep8
+      - run: 
+          name: Lint with flake8
+          command: |
+            pip install flake8
+            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude resources
+            flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude resources
+      - run: 
+          name: Run Pylint
+          command: |
+            pip install pylint 
+            pylint **/*.py --output-format=text --rcfile=.pylintrc
+      - run: 
+          name: Run Bandit
+          command: |
+            pip install bandit
+            bandit -ll -r gupt train
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
