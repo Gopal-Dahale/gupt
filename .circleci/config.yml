@@ -18,11 +18,11 @@ jobs:
           paths:
             - ~/.local
       - run: 
-        name: Format with YAPF 
-        when: always
-        command: |
-          pip install yapf
-          yapf -i -r . --style pep8
+          name: Format with YAPF 
+          when: always
+          command: |
+            pip install yapf
+            yapf -i -r . --style pep8
 
       # - run: 
       #   name: Lint with flake8
