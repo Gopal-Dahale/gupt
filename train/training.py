@@ -1,5 +1,4 @@
 """ Training Model"""
-import numpy as np
 import pytorch_lightning as pl
 # from gupt.data.mnist_data_module import MNISTDataModule
 from gupt.data.emnist_data_module import EMNISTDataModule
