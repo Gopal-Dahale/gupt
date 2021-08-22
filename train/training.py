@@ -30,7 +30,8 @@ def main():
     # logger.watch(model)
 
     trainer = pl.Trainer(
-        max_epochs=5,
+        fast_dev_run=True,
+        max_epochs=2,
         weights_save_path='train/logs',
         weights_summary='full',
         #  logger=logger
