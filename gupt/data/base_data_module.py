@@ -9,7 +9,6 @@ class BaseDataModule(pl.LightningDataModule):
     Args:
         pl (Module): Lightning Data Module
     """
-
     def __init__(self, args):
         super().__init__()
 
@@ -63,7 +62,7 @@ def load_data(data_module):
     Args:
         data_module (class): Data module class (eg. MNIST)
     """
-    dataset = data_module(None)
+    dataset = data_module()
     dataset.prepare_data()
     dataset.setup()
     print("Dataset Loaded Successfully")

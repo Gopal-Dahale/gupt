@@ -11,7 +11,6 @@ class Accuracy(torchmetrics.Accuracy):
     Args:
         torchmetrics (Module): Accuracy metric from torchmetrics
     """
-
     def update(self, preds, target):
         """Applies softmax function if the preds are not between 0 and 1
 
@@ -30,7 +29,6 @@ class BaseLitModel(pl.LightningModule):
     Args:
         pl (module): Lightning Module
     """
-
     def __init__(self, model, args):
         super().__init__()
         self.args = {}
@@ -53,7 +51,14 @@ class BaseLitModel(pl.LightningModule):
         self.optimizer = torch.optim.SGD(self.model.parameters(),
                                          lr=self.lr,
                                          momentum=0.9)
-        return self.optimizer
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer=self.optimizer,
+                                                    step_size=1,
+                                                    gamma=0.1)
+        return {
+            'optimizer': self.optimizer,
+            'lr_scheduler': scheduler,
+            'monitor': 'val_loss'
+        }
 
     def training_step(self, batch, batch_idx):  # pylint: disable=unused-argument
         x, y = batch
