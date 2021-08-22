@@ -5,6 +5,11 @@ import torch.nn.functional as F
 
 
 class CNN(nn.Module):
+    """Convolutional Neural Network with 3x3 kernel and padding 1.
+
+    Args:
+        nn (Module): NN module
+    """
 
     def __init__(self, input_dims, mapping):
         super().__init__()
@@ -29,6 +34,14 @@ class CNN(nn.Module):
         self.linear2 = nn.Linear(layer_size, len(mapping))
 
     def forward(self, x):
+        """Forward Propagation
+
+        Args:
+            x (tensor): Input
+
+        Returns:
+            out (tensor): Output
+        """
         x = self.conv1(x)
         x = F.relu(x)
         x = self.conv2(x)
@@ -39,5 +52,5 @@ class CNN(nn.Module):
         x = self.linear1(x)
         x = F.relu(x)
         x = self.linear2(x)
-        x = F.relu(x)
-        return x
+        out = F.relu(x)
+        return out

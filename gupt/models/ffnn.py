@@ -10,7 +10,6 @@ class FeedForwardNN(nn.Module):
     Args:
         nn (Module): torch nn module
     """
-
     def __init__(self, input_size, hidden_sizes, output_size):
         super().__init__()
         self.layer_sizes = [input_size] + hidden_sizes + [output_size]
