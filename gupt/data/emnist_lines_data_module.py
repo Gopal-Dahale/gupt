@@ -23,9 +23,9 @@ class EMNISTLinesDataModule(BaseDataModule):
         super().__init__(args)
         self.min_overlap = 0  # Minimum overlap between two images
         self.max_overlap = 0.3  # Maximum overlap between two images
-        self.train_size = 15000  # Size of training set
-        self.val_size = 5000  # Size of validation set
-        self.test_size = 4000  # Size of test set
+        self.train_size = 30000  # Size of training set
+        self.val_size = 6000  # Size of validation set
+        self.test_size = 5000  # Size of test set
         self.limit = 30  # Maximum length of a line
         self.allow_start_end_tokens = True  # Add start and end tokens at the start and end of line respectively
 
@@ -49,7 +49,7 @@ class EMNISTLinesDataModule(BaseDataModule):
         """
         if not os.path.exists(self.file_name()):
             try:
-                os.mkdir(DATA_DIR)
+                os.makedirs(DATA_DIR)
             except OSError as error:
                 print(DATA_DIR + " already exists", error)
 

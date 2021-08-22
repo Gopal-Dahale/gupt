@@ -13,6 +13,7 @@ DATA_DIR = os.getcwd().replace('\\', '/') + '/datasets/downloaded/NLTK'
 class SentenceBuilder:
     """Sentence Builder class
     """
+
     def __init__(self):
         self.corpus = corpus_string()
         self.word_indices = [0] + [
@@ -52,7 +53,7 @@ def corpus_string():
     nltk.data.path.append(DATA_DIR)  # Add DATA_DIR to nltk data path
 
     if not os.path.exists(DATA_DIR):
-        os.mkdir(DATA_DIR)
+        os.makedirs(DATA_DIR)
         nltk.download('brown', download_dir=DATA_DIR)
 
     corpus = nltk.corpus.brown.sents()
