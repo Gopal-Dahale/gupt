@@ -14,7 +14,6 @@ class MNISTDataModule(BaseDataModule):
     Args:
         BaseDataModule (Module): Base Data Module Class
     """
-
     def __init__(self, args=None):
         super().__init__(args)
         self.data_dir = DATA_DIR
@@ -22,7 +21,7 @@ class MNISTDataModule(BaseDataModule):
             [transforms.ToTensor(),
              transforms.Normalize((0.1307), (0.3081))])
         self.dims = (1, 28, 28)
-        self.output_dims = (1,)
+        self.output_dims = (1, )
         self.mapping = list(range(10))
 
     def prepare_data(self):
@@ -43,7 +42,8 @@ class MNISTDataModule(BaseDataModule):
                            train=True,
                            download=True,
                            transform=self.transform)
-        self.train_data, self.val_data = random_split(mnist_full, [55000, 5000])
+        self.train_data, self.val_data = random_split(mnist_full,
+                                                      [55000, 5000])
 
         # Assign Test split(s) for use in Dataloaders
         self.test_data = MNIST(self.data_dir,

@@ -1,9 +1,9 @@
 """ EMNIST Data Module Class"""
 import os
 import json
+from pathlib import Path
 import numpy as np
 import h5py
-from pathlib import Path
 import torch
 from torchvision import transforms
 from torchvision.datasets import EMNIST
@@ -34,20 +34,20 @@ class EMNISTDataModule(BaseDataModule):
     Args:
         BaseDataModule (Module): Base Data Module Class
     """
-
     def __init__(self, args=None):
         super().__init__(args)
         self.data_dir = DATA_DIR
         self.transform = transforms.Compose([transforms.ToTensor()])
         self.dims = (1, 28, 28)
-        self.output_dims = (1,)
+        self.output_dims = (1, )
         if not os.path.exists(EMNIST_MAPPING_FILE_PATH):
             download_and_process_emnist(self.data_dir)
         with open(EMNIST_MAPPING_FILE_PATH, 'r') as file:
             emnist_mapping = json.load(file)
         self.mapping = emnist_mapping['mapping']
         self.inverse_mapping = {
-            char: idx for idx, char in enumerate(self.mapping)
+            char: idx
+            for idx, char in enumerate(self.mapping)
         }
 
         # Train/test sets

@@ -19,7 +19,6 @@ class EMNISTLinesDataModule(BaseDataModule):
     Args:
         BaseDataModule (Module): Base Data Module Class
     """
-
     def __init__(self, args=None):
         super().__init__(args)
         self.transform = transforms.Compose([transforms.ToTensor()])
@@ -205,7 +204,8 @@ def generate_emnist_lines(character_table, limit, min_overlap, max_overlap,
     labels = []
     count = size
     while len(images) != count:
-        sentences = s_builder.build(limit=s_length, count=(count - len(images)))
+        sentences = s_builder.build(limit=s_length,
+                                    count=(count - len(images)))
         labels.extend(sentences)
         for sentence in sentences:
             images.append(

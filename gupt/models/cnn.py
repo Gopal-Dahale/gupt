@@ -10,7 +10,6 @@ class CNN(nn.Module):
     Args:
         nn (Module): NN module
     """
-
     def __init__(self, input_dims, mapping):
         super().__init__()
         conv_dim = 64

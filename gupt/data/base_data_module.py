@@ -12,7 +12,6 @@ class BaseDataModule(pl.LightningDataModule):
     Args:
         pl (Module): Lightning Data Module
     """
-
     def __init__(self, args):
         super().__init__()
 

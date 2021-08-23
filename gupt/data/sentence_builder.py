@@ -14,7 +14,6 @@ DATA_DIR = BaseDataModule.dataset_dir() / 'downloaded/NLTK'
 class SentenceBuilder:
     """Sentence Builder class
     """
-
     def __init__(self):
         self.corpus = corpus_string()
         self.word_indices = [0] + [
