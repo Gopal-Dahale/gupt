@@ -1,6 +1,9 @@
 """ Base Data Module Class"""
+from pathlib import Path
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
+
+DATA_DIR = Path(__file__).resolve().parents[2] / "datasets"
 
 
 class BaseDataModule(pl.LightningDataModule):
@@ -9,6 +12,7 @@ class BaseDataModule(pl.LightningDataModule):
     Args:
         pl (Module): Lightning Data Module
     """
+
     def __init__(self, args):
         super().__init__()
 
@@ -36,6 +40,15 @@ class BaseDataModule(pl.LightningDataModule):
             'output_dims': self.output_dims,
             'mapping': self.mapping
         }
+
+    @classmethod
+    def dataset_dir(cls):
+        """Dataset directory path
+
+        Returns:
+            (str): Dataset directory path
+        """
+        return DATA_DIR
 
     def train_dataloader(self):
         return DataLoader(self.train_data,

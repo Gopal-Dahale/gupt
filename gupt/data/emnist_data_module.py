@@ -3,6 +3,7 @@ import os
 import json
 import numpy as np
 import h5py
+from pathlib import Path
 import torch
 from torchvision import transforms
 from torchvision.datasets import EMNIST
@@ -11,13 +12,12 @@ from gupt.data.base_data_module import BaseDataModule, load_data
 from gupt.data.base_dataset import BaseDataset
 
 # Directory to hold downloaded dataset
-DATA_DIR = os.getcwd().replace('\\', '/') + '/datasets/downloaded'
+DATA_DIR = BaseDataModule.dataset_dir() / 'downloaded'
 TRAINING_DATA_FRACTION = 0.9
-PROCESSED_DATA_PATH = os.getcwd().replace('\\',
-                                          '/') + '/datasets/processed/EMNIST'
-PROCESSED_DATA_FILENAME = PROCESSED_DATA_PATH + "/emnist_byclass.h5"
-EMNIST_MAPPING_FILE_PATH = os.getcwd().replace(
-    '\\', '/') + '/gupt/data/emnist_mapping.json'
+PROCESSED_DATA_PATH = BaseDataModule.dataset_dir() / 'processed/EMNIST'
+PROCESSED_DATA_FILENAME = PROCESSED_DATA_PATH / "emnist_byclass.h5"
+EMNIST_MAPPING_FILE_PATH = Path(
+    __file__).resolve().parents[0] / 'emnist_mapping.json'
 
 # Special tokens used for detecting lines and paragraphs
 # - Blank token
@@ -34,20 +34,20 @@ class EMNISTDataModule(BaseDataModule):
     Args:
         BaseDataModule (Module): Base Data Module Class
     """
+
     def __init__(self, args=None):
         super().__init__(args)
         self.data_dir = DATA_DIR
         self.transform = transforms.Compose([transforms.ToTensor()])
         self.dims = (1, 28, 28)
-        self.output_dims = (1, )
+        self.output_dims = (1,)
         if not os.path.exists(EMNIST_MAPPING_FILE_PATH):
             download_and_process_emnist(self.data_dir)
         with open(EMNIST_MAPPING_FILE_PATH, 'r') as file:
             emnist_mapping = json.load(file)
         self.mapping = emnist_mapping['mapping']
         self.inverse_mapping = {
-            char: idx
-            for idx, char in enumerate(self.mapping)
+            char: idx for idx, char in enumerate(self.mapping)
         }
 
     def prepare_data(self):

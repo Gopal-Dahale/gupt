@@ -1,12 +1,11 @@
 """ MNIST Data Module Class"""
-import os
 from torchvision import transforms
 from torchvision.datasets import MNIST
 from torch.utils.data import random_split
 from gupt.data.base_data_module import BaseDataModule, load_data
 
 # Directory to hold downloaded dataset
-DATA_DIR = os.getcwd().replace('\\', '/') + '/datasets/downloaded'
+DATA_DIR = BaseDataModule.dataset_dir() / 'downloaded'
 
 
 class MNISTDataModule(BaseDataModule):
@@ -15,6 +14,7 @@ class MNISTDataModule(BaseDataModule):
     Args:
         BaseDataModule (Module): Base Data Module Class
     """
+
     def __init__(self, args=None):
         super().__init__(args)
         self.data_dir = DATA_DIR
@@ -22,7 +22,7 @@ class MNISTDataModule(BaseDataModule):
             [transforms.ToTensor(),
              transforms.Normalize((0.1307), (0.3081))])
         self.dims = (1, 28, 28)
-        self.output_dims = (1, )
+        self.output_dims = (1,)
         self.mapping = list(range(10))
 
     def prepare_data(self):
@@ -43,8 +43,7 @@ class MNISTDataModule(BaseDataModule):
                            train=True,
                            download=True,
                            transform=self.transform)
-        self.train_data, self.val_data = random_split(mnist_full,
-                                                      [55000, 5000])
+        self.train_data, self.val_data = random_split(mnist_full, [55000, 5000])
 
         # Assign Test split(s) for use in Dataloaders
         self.test_data = MNIST(self.data_dir,

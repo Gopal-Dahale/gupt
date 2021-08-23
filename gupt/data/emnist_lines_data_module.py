@@ -9,7 +9,8 @@ from gupt.data.sentence_builder import SentenceBuilder
 from gupt.data.base_dataset import BaseDataset
 
 # Directory to hold downloaded dataset
-DATA_DIR = os.getcwd().replace('\\', '/') + '/datasets/processed/EMNIST_LINES'
+DATA_DIR = BaseDataModule.dataset_dir() / 'processed/EMNIST_LINES'
+print(DATA_DIR)
 
 
 class EMNISTLinesDataModule(BaseDataModule):
@@ -23,9 +24,9 @@ class EMNISTLinesDataModule(BaseDataModule):
         super().__init__(args)
         self.min_overlap = 0  # Minimum overlap between two images
         self.max_overlap = 0.3  # Maximum overlap between two images
-        self.train_size = 30000  # Size of training set
-        self.val_size = 6000  # Size of validation set
-        self.test_size = 5000  # Size of test set
+        self.train_size = 15000  # Size of training set
+        self.val_size = 5000  # Size of validation set
+        self.test_size = 4000  # Size of test set
         self.limit = 30  # Maximum length of a line
         self.allow_start_end_tokens = True  # Add start and end tokens at the start and end of line respectively
 
@@ -51,7 +52,7 @@ class EMNISTLinesDataModule(BaseDataModule):
             try:
                 os.makedirs(DATA_DIR)
             except OSError as error:
-                print(DATA_DIR + " already exists", error)
+                print("Directory Already exists", error)
 
             for split in ["train", "val", "test"]:
                 self._synthesize_data(split)
@@ -88,7 +89,7 @@ class EMNISTLinesDataModule(BaseDataModule):
             (str): File name
         """
         name = f"train_{self.train_size}_val_{self.val_size}_test_{self.test_size}_mino_{self.min_overlap}_maxo_{self.max_overlap}_lim_{self.limit}_s_e_tok_{self.allow_start_end_tokens}"
-        return DATA_DIR + "/" + name + ".h5"
+        return DATA_DIR / (name + ".h5")
 
     def _synthesize_data(self, split):
         """Create synthetic EMNISTLines dataset using EMNIST dataset

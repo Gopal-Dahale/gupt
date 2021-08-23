@@ -5,9 +5,10 @@ import itertools
 import string
 import numpy as np
 import nltk
+from gupt.data.base_data_module import BaseDataModule
 
 # Directory to hold downloaded dataset
-DATA_DIR = os.getcwd().replace('\\', '/') + '/datasets/downloaded/NLTK'
+DATA_DIR = BaseDataModule.dataset_dir() / 'downloaded/NLTK'
 
 
 class SentenceBuilder:
