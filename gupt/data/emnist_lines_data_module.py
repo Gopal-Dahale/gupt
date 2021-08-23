@@ -3,6 +3,7 @@ import os
 import h5py
 import numpy as np
 import torch
+from torchvision import transforms
 from gupt.data.base_data_module import BaseDataModule, load_data
 from gupt.data.emnist_data_module import EMNISTDataModule
 from gupt.data.sentence_builder import SentenceBuilder
@@ -10,7 +11,6 @@ from gupt.data.base_dataset import BaseDataset
 
 # Directory to hold downloaded dataset
 DATA_DIR = BaseDataModule.dataset_dir() / 'processed/EMNIST_LINES'
-print(DATA_DIR)
 
 
 class EMNISTLinesDataModule(BaseDataModule):
@@ -22,11 +22,12 @@ class EMNISTLinesDataModule(BaseDataModule):
 
     def __init__(self, args=None):
         super().__init__(args)
+        self.transform = transforms.Compose([transforms.ToTensor()])
         self.min_overlap = 0  # Minimum overlap between two images
         self.max_overlap = 0.3  # Maximum overlap between two images
-        self.train_size = 15000  # Size of training set
-        self.val_size = 5000  # Size of validation set
-        self.test_size = 4000  # Size of test set
+        self.train_size = 10  # Size of training set
+        self.val_size = 2  # Size of validation set
+        self.test_size = 2  # Size of test set
         self.limit = 30  # Maximum length of a line
         self.allow_start_end_tokens = True  # Add start and end tokens at the start and end of line respectively
 
@@ -74,9 +75,9 @@ class EMNISTLinesDataModule(BaseDataModule):
             x_test = file['x_test'][:]
             y_test = file['y_test'][:]
 
-        emnist_lines_train = BaseDataset(x_train, y_train)
-        emnist_lines_val = BaseDataset(x_val, y_val)
-        emnist_lines_test = BaseDataset(x_test, y_test)
+        emnist_lines_train = BaseDataset(x_train, y_train, self.transform)
+        emnist_lines_val = BaseDataset(x_val, y_val, self.transform)
+        emnist_lines_test = BaseDataset(x_test, y_test, self.transform)
 
         self.train_data = emnist_lines_train
         self.val_data = emnist_lines_val
@@ -102,15 +103,18 @@ class EMNISTLinesDataModule(BaseDataModule):
         character_table = {}
         if split == 'train':
             size = self.train_size
-            character_table = generate_character_table(self.emnist.train_data,
+            character_table = generate_character_table(self.emnist.x_train,
+                                                       self.emnist.y_train,
                                                        self.mapping)
         elif split == 'val':
             size = self.val_size
-            character_table = generate_character_table(self.emnist.val_data,
+            character_table = generate_character_table(self.emnist.x_train,
+                                                       self.emnist.y_train,
                                                        self.mapping)
         elif split == 'test':
             size = self.test_size
-            character_table = generate_character_table(self.emnist.test_data,
+            character_table = generate_character_table(self.emnist.x_test,
+                                                       self.emnist.y_test,
                                                        self.mapping)
 
         with h5py.File(self.file_name(), 'a') as file:
@@ -118,6 +122,8 @@ class EMNISTLinesDataModule(BaseDataModule):
                                                    self.min_overlap,
                                                    self.max_overlap, size,
                                                    self.dims)
+            for i in images:
+                print(i.min(), i.max())
 
             labels = string_to_label(labels, self.allow_start_end_tokens,
                                      self.emnist.inverse_mapping,
@@ -125,7 +131,7 @@ class EMNISTLinesDataModule(BaseDataModule):
 
             file.create_dataset("x_" + split,
                                 data=images,
-                                dtype="float32",
+                                dtype="u1",
                                 compression="gzip")
             file.create_dataset("y_" + split,
                                 data=labels,
@@ -155,19 +161,20 @@ def string_to_label(labels, allow_start_end_tokens, inv_mapping, max_length):
     return res
 
 
-def generate_character_table(data, mapping):
+def generate_character_table(images, labels, mapping):
     """Create character table which is a dictionary with EMNIST classes as keys and their corresponding images as values.
     Each value is a list of images for each key.
 
     Args:
-        data (gupt.data.base_dataset.BaseDataset): Dataset (train/test/val)
+        images (numpy.ndarray): Set of images
+        labels (numpy.ndarray): Corresponding labels of images
         mapping (list): List of EMNIST character mapping
 
     Returns:
         character_table (dict): Character table
     """
     character_table = {}
-    for image, label in data:
+    for image, label in zip(images, labels):
         char = mapping[label]
         if char not in character_table:
             character_table[char] = []
@@ -225,7 +232,7 @@ def string_to_image(character_table, min_overlap, max_overlap, sentence, dims):
     """
     overlap = np.random.uniform(low=min_overlap, high=max_overlap)
 
-    empty_image = torch.zeros((28, 28), dtype=torch.float32)
+    empty_image = torch.zeros((28, 28), dtype=torch.uint8)
 
     # Images of sentence's characters
     sentence_character_table = {}
@@ -243,7 +250,7 @@ def string_to_image(character_table, min_overlap, max_overlap, sentence, dims):
     img_height, img_width = sentence_images[0].shape
     concatenated_img_width = img_width - int(overlap * img_width)
     line_width = dims[-1]
-    line = torch.zeros((img_height, line_width), dtype=torch.float32)
+    line = torch.zeros((img_height, line_width), dtype=torch.uint8)
 
     break_point = 0
     for img in sentence_images:

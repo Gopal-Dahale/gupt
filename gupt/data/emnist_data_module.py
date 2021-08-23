@@ -50,6 +50,14 @@ class EMNISTDataModule(BaseDataModule):
             char: idx for idx, char in enumerate(self.mapping)
         }
 
+        # Train/test sets
+        # These are members of class because they hold images in the range [0, 255].
+        # These will be used in creation of EMNISTLines Dataset
+        self.x_train = []
+        self.y_train = []
+        self.x_test = []
+        self.y_test = []
+
     def prepare_data(self):
         """Download train/ test data
         """
@@ -66,22 +74,18 @@ class EMNISTDataModule(BaseDataModule):
             stage (str, optional): used to separate setup logic for trainer.{fit,validate,test}. If setup is called with stage = None, we assume all stages have been set-up. Defaults to None.
         """
         # Assign Train/val split(s) for use in Dataloaders
-        x_train = []
-        y_train = []
-        x_test = []
-        y_test = []
 
         with h5py.File(PROCESSED_DATA_FILENAME, 'r') as file:
-            x_train = file['x_train'][:]
-            y_train = torch.LongTensor(file['y_train'][:])
-            x_test = file['x_test'][:]
-            y_test = torch.LongTensor(file['y_test'][:])
+            self.x_train = file['x_train'][:]
+            self.y_train = torch.LongTensor(file['y_train'][:])
+            self.x_test = file['x_test'][:]
+            self.y_test = torch.LongTensor(file['y_test'][:])
 
-        emnist_full = BaseDataset(x_train, y_train, self.transform)
-        emnist_test = BaseDataset(x_test, y_test, self.transform)
+        emnist_full = BaseDataset(self.x_train, self.y_train, self.transform)
+        emnist_test = BaseDataset(self.x_test, self.y_test, self.transform)
 
-        train_data_size = int(len(emnist_full) * TRAINING_DATA_FRACTION)
-        val_data_size = len(emnist_full) - train_data_size
+        train_data_size = int(len(self.x_train) * TRAINING_DATA_FRACTION)
+        val_data_size = len(self.x_train) - train_data_size
 
         self.train_data, self.val_data = random_split(
             emnist_full, [train_data_size, val_data_size])
