@@ -34,7 +34,7 @@ def main():
 
     trainer = pl.Trainer(
         fast_dev_run=True,
-        max_epochs=2,
+        max_epochs=1,
         weights_save_path='train/logs',
         weights_summary='full',
         #  logger=logger

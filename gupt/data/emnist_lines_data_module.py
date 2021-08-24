@@ -19,14 +19,15 @@ class EMNISTLinesDataModule(BaseDataModule):
     Args:
         BaseDataModule (Module): Base Data Module Class
     """
+
     def __init__(self, args=None):
         super().__init__(args)
         self.transform = transforms.Compose([transforms.ToTensor()])
         self.min_overlap = 0  # Minimum overlap between two images
-        self.max_overlap = 0.3  # Maximum overlap between two images
-        self.train_size = 10  # Size of training set
-        self.val_size = 2  # Size of validation set
-        self.test_size = 2  # Size of test set
+        self.max_overlap = 0  # Maximum overlap between two images
+        self.train_size = 10000  # Size of training set
+        self.val_size = 2000  # Size of validation set
+        self.test_size = 2000  # Size of test set
         self.limit = 30  # Maximum length of a line
         self.allow_start_end_tokens = True  # Add start and end tokens at the start and end of line respectively
 
@@ -121,8 +122,6 @@ class EMNISTLinesDataModule(BaseDataModule):
                                                    self.min_overlap,
                                                    self.max_overlap, size,
                                                    self.dims)
-            for i in images:
-                print(i.min(), i.max())
 
             labels = string_to_label(labels, self.allow_start_end_tokens,
                                      self.emnist.inverse_mapping,
@@ -204,8 +203,7 @@ def generate_emnist_lines(character_table, limit, min_overlap, max_overlap,
     labels = []
     count = size
     while len(images) != count:
-        sentences = s_builder.build(limit=s_length,
-                                    count=(count - len(images)))
+        sentences = s_builder.build(limit=s_length, count=(count - len(images)))
         labels.extend(sentences)
         for sentence in sentences:
             images.append(
