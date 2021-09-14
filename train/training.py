@@ -6,7 +6,7 @@ from gupt.data.mnist_data_module import MNISTDataModule
 # from gupt.data.emnist_data_module import EMNISTDataModule
 # from gupt.data.emnist_lines_data_module import EMNISTLinesDataModule
 from gupt.models.ffnn import FeedForwardNN
-from gupt.models.cnn import CNN
+# from gupt.models.cnn import CNN
 from gupt import lightning_models
 # from pytorch_lightning import loggers as pl_loggers
 
