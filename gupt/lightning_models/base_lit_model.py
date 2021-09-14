@@ -11,6 +11,7 @@ class Accuracy(torchmetrics.Accuracy):
     Args:
         torchmetrics (Module): Accuracy metric from torchmetrics
     """
+
     def update(self, preds, target):
         """Applies softmax function if the preds are not between 0 and 1
 
@@ -29,6 +30,7 @@ class BaseLitModel(pl.LightningModule):
     Args:
         pl (module): Lightning Module
     """
+
     def __init__(self, model, args):
         super().__init__()
         self.args = {}

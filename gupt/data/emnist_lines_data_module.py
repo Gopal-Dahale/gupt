@@ -69,11 +69,11 @@ class EMNISTLinesDataModule(BaseDataModule):
         y_test = []
         with h5py.File(self.file_name(), 'r') as file:
             x_train = file['x_train'][:]
-            y_train = file['y_train'][:]
+            y_train = torch.LongTensor(file['y_train'][:])
             x_val = file['x_val'][:]
-            y_val = file['y_val'][:]
+            y_val = torch.LongTensor(file['y_val'][:])
             x_test = file['x_test'][:]
-            y_test = file['y_test'][:]
+            y_test = torch.LongTensor(file['y_test'][:])
 
         emnist_lines_train = BaseDataset(x_train, y_train, self.transform)
         emnist_lines_val = BaseDataset(x_val, y_val, self.transform)

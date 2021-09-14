@@ -2,9 +2,10 @@
 import pytorch_lightning as pl
 # from gupt.data.mnist_data_module import MNISTDataModule
 from gupt.data.emnist_data_module import EMNISTDataModule
-# from gupt.data.emnist_lines_data_module import EMNISTLinesDataModule
+from gupt.data.emnist_lines_data_module import EMNISTLinesDataModule
 # from gupt.models.ffnn import FeedForwardNN
 from gupt.models.cnn import CNN
+from gupt.models.cnn_line_basic import CNNLineBasic
 from gupt import lightning_models
 # from pytorch_lightning import loggers as pl_loggers
 
@@ -19,12 +20,16 @@ def main():
     #                       hidden_sizes=[1024, 128],
     #                       output_size=len(data_config['mapping']))
 
-    data = EMNISTDataModule()
-    data_config = data.config()
-    model = CNN(input_dims=data_config['input_dims'],
-                mapping=data_config['mapping'])
+    # data = EMNISTDataModule()
+    # data_config = data.config()
+    # model = CNN(input_dims=data_config['input_dims'],
+    #             mapping=data_config['mapping'])
 
-    # data = EMNISTLinesDataModule()
+    data = EMNISTLinesDataModule()
+    data_config = data.config()
+    model = CNNLineBasic(input_dims=data_config['input_dims'],
+                         output_dims=data_config['output_dims'],
+                         mapping=data_config['mapping'])
 
     lit_model = lightning_models.BaseLitModel(model=model, args=None)
 

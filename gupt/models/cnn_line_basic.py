@@ -1,5 +1,6 @@
 """ CNNLine Basic Model"""
 import math
+import torch
 from torch import nn
 from gupt.models.cnn import CNN
 
@@ -34,7 +35,15 @@ class CNNLineBasic(nn.Module):
         num_windows = math.floor(
             (line_width - self.window_width) / (self.window_stride)) + 1
 
-        for i in num_windows:
+        # type_as(x) is required for setting the device (cuda or cpu)
+        # https://forums.pytorchlightning.ai/t/training-fails-but-found-at-least-two-devices-cuda-0-and-cpu/694
+        preds = torch.zeros(
+            (batch_size, self.num_mapping, num_windows)).type_as(x)
+
+        for i in range(num_windows):
             start = i * self.window_stride
             end = start + self.window_width
             window = x[:, :, :, start:end]
+            preds[:, :, i] = self.cnn(window)
+
+        return preds
