@@ -10,10 +10,12 @@ class CNN(nn.Module):
     Args:
         nn (Module): NN module
     """
+
     def __init__(self, input_dims, mapping):
         super().__init__()
         conv_dim = 64
         layer_size = 128
+        output_size = len(mapping)
 
         self.conv1 = nn.Conv2d(in_channels=input_dims[0],
                                out_channels=conv_dim,
@@ -30,7 +32,7 @@ class CNN(nn.Module):
         conv_out_size = 28 // 2
         input_dim = conv_out_size * conv_out_size * conv_dim
         self.linear1 = nn.Linear(input_dim, layer_size)
-        self.linear2 = nn.Linear(layer_size, len(mapping))
+        self.linear2 = nn.Linear(layer_size, output_size)
 
     def forward(self, x):
         """Forward Propagation
@@ -51,5 +53,4 @@ class CNN(nn.Module):
         x = self.linear1(x)
         x = F.relu(x)
         x = self.linear2(x)
-        out = F.relu(x)
-        return out
+        return x
