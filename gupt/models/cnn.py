@@ -43,9 +43,11 @@ class CNN(nn.Module):
         Returns:
             out (tensor): Output
         """
+        residual = x  # used for identity
         x = self.conv1(x)
         x = F.relu(x)
         x = self.conv2(x)
+        x += residual
         x = F.relu(x)
         x = self.max_pool_layer(x)
         x = self.dropout(x)
