@@ -13,9 +13,13 @@ from gupt.data.base_dataset import BaseDataset
 
 # Directory to hold downloaded dataset
 DATA_DIR = BaseDataModule.dataset_dir() / 'downloaded'
-TRAINING_DATA_FRACTION = 0.9
+TRAINING_DATA_FRACTION = 0.9  # Fraction of dataset used for training
+
+# Directory to hold the processed EMNIST data
 PROCESSED_DATA_PATH = BaseDataModule.dataset_dir() / 'processed/EMNIST'
 PROCESSED_DATA_FILENAME = PROCESSED_DATA_PATH / "emnist_byclass.h5"
+
+# EMNIST output mapping
 EMNIST_MAPPING_FILE_PATH = Path(
     __file__).resolve().parents[0] / 'emnist_mapping.json'
 
@@ -34,20 +38,24 @@ class EMNISTDataModule(BaseDataModule):
     Args:
         BaseDataModule (Module): Base Data Module Class
     """
+
     def __init__(self, args=None):
         super().__init__(args)
         self.data_dir = DATA_DIR
         self.transform = transforms.Compose([transforms.ToTensor()])
-        self.dims = (1, 28, 28)
-        self.output_dims = (1, )
+        self.dims = (1, 28, 28)  # Input dimensions
+        self.output_dims = (1,)  # Output dimensions
+
         if not os.path.exists(EMNIST_MAPPING_FILE_PATH):
             download_and_process_emnist(self.data_dir)
         with open(EMNIST_MAPPING_FILE_PATH, 'r') as file:
             emnist_mapping = json.load(file)
+
         self.mapping = emnist_mapping['mapping']
+
+        # Inverse mapping from characters to indices
         self.inverse_mapping = {
-            char: idx
-            for idx, char in enumerate(self.mapping)
+            char: idx for idx, char in enumerate(self.mapping)
         }
 
         # Train/test sets
@@ -73,14 +81,13 @@ class EMNISTDataModule(BaseDataModule):
         Args:
             stage (str, optional): used to separate setup logic for trainer.{fit,validate,test}. If setup is called with stage = None, we assume all stages have been set-up. Defaults to None.
         """
-        # Assign Train/val split(s) for use in Dataloaders
-
         with h5py.File(PROCESSED_DATA_FILENAME, 'r') as file:
             self.x_train = file['x_train'][:]
             self.y_train = torch.LongTensor(file['y_train'][:])
             self.x_test = file['x_test'][:]
             self.y_test = torch.LongTensor(file['y_test'][:])
 
+        # Assign Train/val split(s) for use in Dataloaders
         emnist_full = BaseDataset(self.x_train, self.y_train, self.transform)
         emnist_test = BaseDataset(self.x_test, self.y_test, self.transform)
 
@@ -143,7 +150,7 @@ def download_and_process_emnist(data_dir):
                             dtype="u1",
                             compression="gzip")
 
-    # Store EMNIST character mapping
+    # Store EMNIST character mapping in a file
     mapping = emnist_character_mapping(train_data.classes)
     emnist_mapping = {"mapping": mapping}
     with open(EMNIST_MAPPING_FILE_PATH, "w") as file:
@@ -163,13 +170,15 @@ def balance_dataset(images, labels):
     samples_per_class = int(np.bincount(labels).mean())
     unique_labels = np.unique(labels)
     new_indices = []
+
     for label in unique_labels:
 
-        indices = np.where(labels == label)[
-            0]  # Indices at which 'label' is present in 'labels'
+        # Indices at which 'label' is present in 'labels'
+        indices = np.where(labels == label)[0]
+
+        # Take at most mean number of unique indices
         sampled_indices = list(
-            np.unique(np.random.choice(indices, size=samples_per_class))
-        )  # Take at most mean number of unique indices
+            np.unique(np.random.choice(indices, size=samples_per_class)))
 
         new_indices.extend(sampled_indices)
 

@@ -14,6 +14,7 @@ DATA_DIR = BaseDataModule.dataset_dir() / 'downloaded/NLTK'
 class SentenceBuilder:
     """Sentence Builder class
     """
+
     def __init__(self):
         self.corpus = corpus_string()
         self.word_indices = [0] + [
@@ -30,26 +31,37 @@ class SentenceBuilder:
         Returns:
             sentences (list): List of sentences
         """
-        sentences = []
-        attempts = 20
+        sentences = []  # List of all sentences
+        attempts = 20  # Number of attempts to make before returning from the function
+
         while count and attempts:
+
+            # Generate a random index from the word_indices list
             random_idx = np.random.randint(low=0,
                                            high=len(self.word_indices) - 1)
-            start_idx = self.word_indices[random_idx]
+
+            start_idx = self.word_indices[random_idx]  # Get the index of word
+
+            # Holds the possible candidates for end indices of a sentence constraint to length of string i.e. limit
             end_idxes = []
+
             for i in range(random_idx + 1, len(self.word_indices)):
                 if (self.word_indices[i] - start_idx > limit) or (count == 0):
                     break
                 end_idxes.append(self.word_indices[i])
                 count -= 1
+
+            # Extract sentences from corpus
             for end_idx in end_idxes:
                 sentences.append(self.corpus[start_idx:end_idx].strip())
             attempts -= 1
+
         return sentences
 
 
 def corpus_string():
     """String containing brown corpus text will all punctuations removed"""
+
     nltk.data.path.append(DATA_DIR)  # Add DATA_DIR to nltk data path
 
     if not os.path.exists(DATA_DIR):
@@ -57,8 +69,9 @@ def corpus_string():
         nltk.download('brown', download_dir=DATA_DIR)
 
     corpus = nltk.corpus.brown.sents()
-    corpus = " ".join(
-        itertools.chain.from_iterable(corpus))  # concat all lists with " "
+
+    # concat all lists with " "
+    corpus = " ".join(itertools.chain.from_iterable(corpus))
 
     punctuations = string.punctuation  # string of all punctuations
 
@@ -67,4 +80,5 @@ def corpus_string():
     translation_table = {ord(p): None for p in punctuations}
     corpus = corpus.translate(translation_table)  # Remove punctutations
     corpus = ' '.join(corpus.split())  # Remove contiguous spaces
+
     return corpus
