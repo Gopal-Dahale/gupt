@@ -24,10 +24,10 @@ class EMNISTLinesDataModule(BaseDataModule):
         super().__init__(args)
         self.transform = transforms.Compose([transforms.ToTensor()])
         self.min_overlap = 0  # Minimum overlap between two images
-        self.max_overlap = 0.3  # Maximum overlap between two images
-        self.train_size = 10  # Size of training set
-        self.val_size = 2  # Size of validation set
-        self.test_size = 2  # Size of test set
+        self.max_overlap = 0  # Maximum overlap between two images
+        self.train_size = 15000  # Size of training set
+        self.val_size = 3000  # Size of validation set
+        self.test_size = 3000  # Size of test set
         self.limit = 30  # Maximum length of a line
         self.allow_start_end_tokens = True  # Add start and end tokens at the start and end of line respectively
 

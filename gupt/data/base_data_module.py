@@ -76,7 +76,7 @@ def load_data(data_module):
     """Function to load data from given data module
 
     Args:
-        data_module (class): Data module class (eg. MNIST)
+        data_module (class): Data module class (eg. MNIST, EMNIST etc.)
     """
     dataset = data_module()
     dataset.prepare_data()
