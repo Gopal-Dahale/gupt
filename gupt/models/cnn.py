@@ -58,12 +58,12 @@ class CNN(nn.Module):
 
         x = self.conv2(x)
         x = self.bn2(x)
+
+        x += residual
         x = F.relu(x)
 
         x = self.conv3(x)
         x = self.bn3(x)
-
-        x += residual
         x = F.relu(x)
 
         x = self.max_pool_layer(x)
