@@ -50,12 +50,10 @@ class BaseLitModel(pl.LightningModule):
         return self.model(x)
 
     def configure_optimizers(self):
-        self.optimizer = torch.optim.SGD(self.model.parameters(),
-                                         lr=self.lr,
-                                         momentum=0.9)
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer=self.optimizer,
-                                                    step_size=1,
-                                                    gamma=0.1)
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
+        scheduler = torch.optim.lr_scheduler.OneCycleLR(
+            optimizer=self.optimizer, max_lr=self.lr, total_steps=100)
+
         return {
             'optimizer': self.optimizer,
             'lr_scheduler': scheduler,

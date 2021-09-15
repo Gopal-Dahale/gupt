@@ -1,4 +1,6 @@
 """ Training Model"""
+# import numpy as np
+import torch
 import pytorch_lightning as pl
 # from gupt.data.mnist_data_module import MNISTDataModule
 from gupt.data.emnist_data_module import EMNISTDataModule
@@ -17,7 +19,7 @@ def main():
     # data = MNISTDataModule()
     # data_config = data.config()
     # model = FeedForwardNN(input_size=np.prod(data_config['input_dims']),
-    #                       hidden_sizes=[1024, 128],
+    #                       hidden_sizes=[128, 256],
     #                       output_size=len(data_config['mapping']))
 
     # data = EMNISTDataModule()
@@ -37,15 +39,23 @@ def main():
     # logger = pl_loggers.WandbLogger()
     # logger.watch(model)
 
-    trainer = pl.Trainer(
-        fast_dev_run=True,
-        max_epochs=1,
-        weights_save_path='train/logs',
-        weights_summary='full',
-        #  logger=logger
-    )
+    gpus = None  # CPU
+    if torch.cuda.is_available():
+        gpus = -1  # all available GPUs
 
-    trainer.tune(model=lit_model, datamodule=data)
+    trainer = pl.Trainer(gpus=gpus,
+                         fast_dev_run=False,
+                         max_epochs=5,
+                         weights_save_path='train/logs',
+                         weights_summary='full',
+                         auto_lr_find=True
+                         #  logger=logger
+                        )
+
+    trainer.tune(
+        model=lit_model,
+        datamodule=data,
+    )
     trainer.fit(model=lit_model, datamodule=data)
     trainer.test(model=lit_model, datamodule=data)
 

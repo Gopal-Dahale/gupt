@@ -3,6 +3,7 @@ from pathlib import Path
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 
+# Directory to hold the datasets
 DATA_DIR = Path(__file__).resolve().parents[2] / "datasets"
 
 
@@ -12,6 +13,7 @@ class BaseDataModule(pl.LightningDataModule):
     Args:
         pl (Module): Lightning Data Module
     """
+
     def __init__(self, args):
         super().__init__()
 
@@ -20,10 +22,12 @@ class BaseDataModule(pl.LightningDataModule):
             self.args = vars(args)
 
         self.batch_size = 128
-        self.num_workers = 4
-        self.dims = None
-        self.output_dims = None
-        self.mapping = None
+        self.num_workers = 4  # Count of subprocesses to use for data loading
+        self.dims = None  # Dimensions of input
+        self.output_dims = None  # Dimensions of output
+        self.mapping = None  # Mapping of output
+
+        # Train/val/test data
         self.train_data = None
         self.val_data = None
         self.test_data = None
@@ -72,7 +76,7 @@ def load_data(data_module):
     """Function to load data from given data module
 
     Args:
-        data_module (class): Data module class (eg. MNIST)
+        data_module (class): Data module class (eg. MNIST, EMNIST etc.)
     """
     dataset = data_module()
     dataset.prepare_data()

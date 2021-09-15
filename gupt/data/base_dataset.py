@@ -8,10 +8,12 @@ class BaseDataset(torch.utils.data.Dataset):
     Args:
         torch (Module): torch Dataset Module
     """
+
     def __init__(self, data, targets, transform=None, target_transform=None):
         super().__init__()
         if len(data) != len(targets):
             print("Length of Targets must match with length of Data")
+
         self.data = data
         self.targets = targets
         self.transform = transform

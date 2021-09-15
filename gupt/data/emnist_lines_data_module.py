@@ -25,9 +25,9 @@ class EMNISTLinesDataModule(BaseDataModule):
         self.transform = transforms.Compose([transforms.ToTensor()])
         self.min_overlap = 0  # Minimum overlap between two images
         self.max_overlap = 0  # Maximum overlap between two images
-        self.train_size = 10000  # Size of training set
-        self.val_size = 2000  # Size of validation set
-        self.test_size = 2000  # Size of test set
+        self.train_size = 15000  # Size of training set
+        self.val_size = 3000  # Size of validation set
+        self.test_size = 3000  # Size of test set
         self.limit = 30  # Maximum length of a line
         self.allow_start_end_tokens = True  # Add start and end tokens at the start and end of line respectively
 
@@ -38,9 +38,10 @@ class EMNISTLinesDataModule(BaseDataModule):
         self.dims = (
             emnist_dims[0],  # Number of channels
             emnist_dims[1],  # Height of line
-            emnist_dims[2] * self.limit  # Length ofl line
-        )
-        self.output_dims = (self.limit, 1)
+            emnist_dims[2] * self.limit  # Length of line
+        )  # Input dimensions
+
+        self.output_dims = (self.limit, 1)  # Output dimensions
 
         # Setup EMNIST
         self.emnist.prepare_data()
@@ -55,12 +56,11 @@ class EMNISTLinesDataModule(BaseDataModule):
             except OSError as error:
                 print("Directory Already exists", error)
 
+            # Synthesize data for train/val/test
             for split in ["train", "val", "test"]:
                 self._synthesize_data(split)
 
     def setup(self, stage=None):
-
-        # Assign Train/val/test split(s) for use in Dataloaders
         x_train = []
         y_train = []
         x_val = []
@@ -75,6 +75,7 @@ class EMNISTLinesDataModule(BaseDataModule):
             x_test = file['x_test'][:]
             y_test = torch.LongTensor(file['y_test'][:])
 
+        # Assign Train/val/test split(s) for use in Dataloaders
         emnist_lines_train = BaseDataset(x_train, y_train, self.transform)
         emnist_lines_val = BaseDataset(x_val, y_val, self.transform)
         emnist_lines_test = BaseDataset(x_test, y_test, self.transform)
@@ -99,8 +100,14 @@ class EMNISTLinesDataModule(BaseDataModule):
             split (str): Type of split (train, val, test)
         """
         print("EMNISTLinesDataModule is synthesizing data for " + split)
-        size = 0
+
+        size = 0  # Size of train/val/test set accordingly
+
+        # Character table which is a dictionary with EMNIST classes as keys
+        # and their corresponding images as values. Each value is a list of
+        # images for each key.
         character_table = {}
+
         if split == 'train':
             size = self.train_size
             character_table = generate_character_table(self.emnist.x_train,
@@ -149,6 +156,7 @@ def string_to_label(labels, allow_start_end_tokens, inv_mapping, max_length):
     Returns:
         res (numpy.ndarray): 2d array of labels where each row is the inverse mapping of particular sentence
     """
+
     res = inv_mapping["<P>"] * np.ones((len(labels), max_length))
     for i, label in enumerate(labels):
         chars = list(label)
