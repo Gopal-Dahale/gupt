@@ -16,7 +16,6 @@ class CNN(nn.Module):
         conv_dim = 64
         layer_size = 128
         output_size = len(mapping)
-
         self.conv1 = nn.Conv2d(in_channels=input_dims[0],
                                out_channels=conv_dim,
                                kernel_size=3,
@@ -27,6 +26,8 @@ class CNN(nn.Module):
                                kernel_size=3,
                                stride=1,
                                padding=1)
+        self.bn1 = nn.BatchNorm2d(conv_dim)
+        self.bn2 = nn.BatchNorm2d(conv_dim)
         self.dropout = nn.Dropout(0.25)
         self.max_pool_layer = nn.MaxPool2d(2)
         conv_out_size = 28 // 2
@@ -44,13 +45,20 @@ class CNN(nn.Module):
             out (tensor): Output
         """
         residual = x  # used for identity
+
         x = self.conv1(x)
+        x = self.bn1(x)
         x = F.relu(x)
+
         x = self.conv2(x)
+        x = self.bn2(x)
+
         x += residual
         x = F.relu(x)
+
         x = self.max_pool_layer(x)
         x = self.dropout(x)
+
         x = torch.flatten(x, 1)
         x = self.linear1(x)
         x = F.relu(x)
