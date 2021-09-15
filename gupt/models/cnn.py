@@ -26,8 +26,14 @@ class CNN(nn.Module):
                                kernel_size=3,
                                stride=1,
                                padding=1)
+        self.conv3 = nn.Conv2d(in_channels=conv_dim,
+                               out_channels=conv_dim,
+                               kernel_size=3,
+                               stride=1,
+                               padding=1)
         self.bn1 = nn.BatchNorm2d(conv_dim)
         self.bn2 = nn.BatchNorm2d(conv_dim)
+        self.bn3 = nn.BatchNorm2d(conv_dim)
         self.dropout = nn.Dropout(0.25)
         self.max_pool_layer = nn.MaxPool2d(2)
         conv_out_size = 28 // 2
@@ -52,6 +58,10 @@ class CNN(nn.Module):
 
         x = self.conv2(x)
         x = self.bn2(x)
+        x = F.relu(x)
+
+        x = self.conv3(x)
+        x = self.bn3(x)
 
         x += residual
         x = F.relu(x)
