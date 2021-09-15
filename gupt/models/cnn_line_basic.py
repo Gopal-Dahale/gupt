@@ -19,7 +19,6 @@ class CNNLineBasic(nn.Module):
         self.limit = output_dims[0]  # Length of string to output
         self.window_width = 28  # Width of window
         self.window_stride = 28  # Stride by which the window is shifted
-
         self.cnn = CNN(input_dims, mapping)
 
     def forward(self, x):
@@ -41,9 +40,9 @@ class CNNLineBasic(nn.Module):
             (batch_size, self.num_mapping, num_windows)).type_as(x)
 
         for i in range(num_windows):
-            start = i * self.window_stride
-            end = start + self.window_width
+            start = i * self.window_stride  # Start of a window
+            end = start + self.window_width  # End of a window
             window = x[:, :, :, start:end]
-            preds[:, :, i] = self.cnn(window)
+            preds[:, :, i] = self.cnn(window)  # Predictions
 
         return preds

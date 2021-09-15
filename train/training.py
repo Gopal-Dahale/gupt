@@ -44,7 +44,7 @@ def main():
         gpus = -1  # all available GPUs
 
     trainer = pl.Trainer(gpus=gpus,
-                         fast_dev_run=False,
+                         fast_dev_run=True,
                          max_epochs=5,
                          weights_save_path='train/logs',
                          weights_summary='full',
